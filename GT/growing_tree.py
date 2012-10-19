@@ -34,23 +34,26 @@ class GrowingTree():
 		'''
 		x, y, opts = random.randint(0, self.width-1), random.randint(0, self.height-1), self.shuf(self.__DIRS)
 		
-		print x,y,opts, self.__DIRS
+		self.start = (x, y)
 
 		self.__CELLS.append((x,y))
 
 		while len(self.__CELLS):
 			index = self.choose_next(len(self.__CELLS), self.method)
-			x, y = self.__CELLS[index]
+			x, y = self.__CELLS.pop(index)
 
 			for DIR in opts:
 				nx, ny = x+DIR[0], y+DIR[1]
 
 				if self.check_bounds(nx, ny):
-					self.__MAZE[y][x] = 1
-					self.__MAZE[y][x] = DIR
-					self.__MAZE[ny][nx] = self.opposite(DIR)
-					self.__CELLS.append((nx, ny))
-					index = 0
+					if self.__MAZE[ny*nx]==0:
+						self.__MAZE[y*x] = 1
+						#self.__MAZE[ny*nx] = 1
+						self.__CELLS.append((nx, ny))
+						index = 0
+					else:
+						continue
+		self.end = (x, y)
 
 	def as_string(self):
 		'''
@@ -68,7 +71,8 @@ class GrowingTree():
 		'''
 			Returns the growing tree maze as a double dimensional array
 		'''
-		pass
+		matrix = [[self.__MAZE[i*j] for i in xrange(self.width)] for j in xrange(self.height)]
+		return matrix
 
 	def get_properties(self):
 		'''
@@ -91,7 +95,7 @@ class GrowingTree():
 		'''
 			Checks bounds for given x,y
 		'''
-		return nx >=0 and ny >=0 and nx<self.width and ny<self.height and self.__MAZE[nx][ny]==0
+		return nx >=0 and ny >=0 and nx<self.width and ny<self.height
 
 	def shuf(self, l):
 		'''
